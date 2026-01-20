@@ -8,4 +8,5 @@ export const apiCallFunction = async(path,payload,methodType)=>{
         credentials:'include'
     }); 
     const res= await yo.json();
+    return res;
 }

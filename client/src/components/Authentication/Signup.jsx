@@ -16,23 +16,23 @@ export default function Signup(props) {
         const payload =
             mode === "signup"
                 ? {
-                      username: username.current.value.trim(),
-                      emailId: emailId.current.value.trim(),
+                      name: username.current.value.trim(),
+                      email: emailId.current.value.trim(),
                       password: password.current.value.trim(),
                   }
                 : {
-                      emailId: emailId.current.value.trim(),
+                      email: emailId.current.value.trim(),
                       password: password.current.value.trim(),
                   };
         if (
-            payload.emailId.length == 0 ||
+            payload.email.length == 0 ||
             payload.password.length == 0 ||
-            (mode === "login" && payload.username.length == 0)
+            (mode === "signup" && payload.name.length == 0)
         ) {
             setMsg("Fill all fields!");
             return;
         }
-        if (!regex.test(payload.emailId)) {
+        if (!regex.test(payload.email)) {
             setMsg("Invalid Email!");
             return;
         }
@@ -41,10 +41,20 @@ export default function Signup(props) {
             return;
         }
         const res = await apiCallFunction(`auth/${mode}`, payload, "POST");
+        if(res.success){
+            console.log(res);
+        }else{
+            setMsg(res.msg);
+        }
     };
 
     const handleGoogleLogin = async (token) => {
         const res = await apiCallFunction(`auth/googlelogin`, { token }, "POST");
+        if(res.success){
+            console.log(res);
+        }else{
+            setMsg(res.msg);
+        }
     };
 
     return (
