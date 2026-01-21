@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import { apiCallFunction } from "../../helpers/apiHelper";
 import { GoogleLogin } from "@react-oauth/google";
+import { useDispatch } from "react-redux";
+import { saveUserData } from "../Slices/userSlice";
 
 export default function Signup(props) {
     const username = useRef(null);
@@ -10,6 +12,8 @@ export default function Signup(props) {
     const [mode, setMode] = useState("signup");
     const [show, setShow] = useState(false);
     const [msg, setMsg] = useState("Join the grind. Build daily.");
+
+    const dispatch = useDispatch();
 
     const submit = async () => {
         const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -42,7 +46,8 @@ export default function Signup(props) {
         }
         const res = await apiCallFunction(`auth/${mode}`, payload, "POST");
         if(res.success){
-            console.log(res);
+            dispatch(saveUserData(res.user));
+            props.stopShow();
         }else{
             setMsg(res.msg);
         }
@@ -51,7 +56,8 @@ export default function Signup(props) {
     const handleGoogleLogin = async (token) => {
         const res = await apiCallFunction(`auth/googlelogin`, { token }, "POST");
         if(res.success){
-            console.log(res);
+            dispatch(saveUserData(res.user));
+            props.stopShow();
         }else{
             setMsg(res.msg);
         }
