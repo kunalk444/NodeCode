@@ -2,16 +2,22 @@ import { Router } from "express";
 import { OAuth2Client } from "google-auth-library";
 import { createUser,handleLogin,handleGoogleLogin } from "../controllers/user.js";
 import { createJwtToken } from "../services/jwttoken.js";
+import { authMiddleware } from "../services/middleware.js";
 
 const authRouter  = Router();
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+authRouter.get("/me",authMiddleware,(req,res)=>{
+    const user = req.user;
+    return res.status(200).json({success:true,user});
+});
 
 authRouter.post("/signup",async(req,res)=>{
     try{
         const userObj = req.body;
         const ifCreated = await createUser(userObj);
         if(ifCreated.success){
-            const token  = createJwtToken(ifCreated.user);
+            const token  = createJwtToken(ifCreated.user);  
 
             res.cookie("jwt",token,{
                 sameSite:"lax",

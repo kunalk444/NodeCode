@@ -28,7 +28,7 @@ export default function Navbar(props) {
                     </button>
 
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-rose-400 to-orange-400 flex items-center justify-center text-white text-[13px] font-medium cursor-pointer">
-                        {user.name.charAt(0).toUpperCase()}
+                        {user.isLoggedIn && user.name.charAt(0).toUpperCase()}
                     </div>
                 </div>
             ) : (

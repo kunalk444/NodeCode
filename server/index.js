@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import { verifyToken } from "./services/jwttoken.js";
 import problemRouter from "./routes/problems.js";
+import { authMiddleware } from "./services/middleware.js";
 
 const port = process.env.PORT;
 
@@ -29,20 +30,11 @@ app.use(cors({
     
 }));
 
-
-
 app.use("/auth",authRouter);
 app.use("/viewproblems",problemRouter);
 
-app.use((req,res,next)=>{
-    const token = req.cookies.jwt;
-    const verify = verifyToken(token);
-    if(verify.success){
-        req.user = verify.userObj;
-        next();
-    }
-    return res.json({success:false,msg:"some error while authorization"})
-})
+app.use(authMiddleware);
+
 
 app.listen(port,()=>{
     console.log(`server running on port ${port}`);
