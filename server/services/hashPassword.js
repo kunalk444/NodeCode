@@ -7,5 +7,6 @@ export async function hashPassword(password){
 }
 
 export async function verifyPassword(password,hash){
+  if(password==undefined || hash==undefined)return false;
   return await bcrypt.compare(password, hash);
 }

@@ -5,13 +5,21 @@ import App from './App.jsx'
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Provider } from 'react-redux';
 import store from './components/Slices/store.js';
+import { BrowserRouter,Routes,Route } from 'react-router-dom';
+import InsideProblem from './components/InsideProblem.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+    <BrowserRouter>
     <GoogleOAuthProvider clientId={'1077019201006-o087ojud2fm2qsu6lc4oc3mn8shetohv.apps.googleusercontent.com'}>
       <Provider store={store}>
-        <App />
+        <Routes>
+          <Route path='/' element={<App/>}/>
+          <Route path='/insideproblem' element={<InsideProblem />} />
+        </Routes>
       </Provider>
     </GoogleOAuthProvider>
+    </BrowserRouter>
   </StrictMode>,
 )
+

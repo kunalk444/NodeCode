@@ -13,6 +13,10 @@ const userSchema = new mongoose.Schema({
     },
     password:{
         type:String,
+    },
+    registration_type:{
+        type:String,
+        default:"normal"
     }
 });
 

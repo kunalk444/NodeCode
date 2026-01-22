@@ -15,7 +15,8 @@ const problemSchema = new mongoose.Schema({
     difficulty:{
         type : String,
         enum : ["easy","medium","hard"]
-    }
+    },
+    parameter_type : String,
 
 });
 

@@ -7,6 +7,8 @@ import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { apiCallFunction } from './helpers/apiHelper';
 import { delUserData, saveUserData } from './components/Slices/userSlice';
+import {Routes,Route} from 'react-router-dom';
+import InsideProblem from './components/InsideProblem';
 
 function App() {
   const dispatch = useDispatch();

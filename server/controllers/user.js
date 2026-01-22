@@ -22,7 +22,8 @@ export const handleGoogleLogin = async(email,name)=>{
         {email},
         {
             $setOnInsert:{
-                name
+                name,
+                registration_type:"google_login"
             }
         },
         {
@@ -37,7 +38,8 @@ export const handleGoogleLogin = async(email,name)=>{
 export const handleLogin = async(user) =>{
     const u1 = await userModel.findOne({email:user.email});
     if(!u1)return {success:false,msg:"User doesn't exist!"}
-    const ifSame = await verifyPassword(user.password,u1.password);
+    if(u1.registration_type === "google_login")return {success:false,msg:"Sign in using google!"}
+    const ifSame = await verifyPassword(user.password,(u1.password||undefined));
     if(ifSame)return {success:true,user:{name:u1.name,email:u1.email,id:u1._id}};
     return {success:false,msg:"Wrong Password!"};
 }
