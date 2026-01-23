@@ -1,39 +1,67 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { EditorState } from "@codemirror/state";
 import { EditorView, lineNumbers } from "@codemirror/view";
 import { javascript } from "@codemirror/lang-javascript";
 import { autocompletion } from "@codemirror/autocomplete";
 import { oneDark } from "@codemirror/theme-one-dark";
+import { useDispatch, useSelector } from "react-redux";
+import { deriveFunction } from "./helper";
+import { saveCode } from "../Slices/codeSlice";
 
-export default function EditorBox({ code, setCode }) {
+export default function EditorBox({id,copyCode}) {
   const editorRef = useRef(null);
   const viewRef = useRef(null);
+  const code = useRef(null);
+  const func_name = useSelector(state=>state.insideProblem.function_name);
+  const parameter = useSelector(state=>state.insideProblem.parameter_type);
+  const derive = deriveFunction(func_name,parameter);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const state = EditorState.create({
-      doc: code,
-      extensions: [
-        lineNumbers(),
-        javascript(),
-        autocompletion(),
-        oneDark,
-        EditorView.updateListener.of((update) => {
-          if (update.docChanged) {
-            setCode(update.state.doc.toString());
-          }
-        }),
-      ],
-    });
+  code.current = derive;
+  const paddingTheme = EditorView.theme({
+    ".cm-scroller": {
+      paddingTop: "0.75rem",
+      paddingBottom: "0.75rem",
+      paddingLeft: "0.75rem",
+      paddingRight: "0.75rem",
+    }
+  });
 
-    viewRef.current = new EditorView({
-      state,
-      parent: editorRef.current,
-    });
+  const state = EditorState.create({
+    doc: code.current,
+    extensions: [
+      lineNumbers(),
+      javascript(),
+      autocompletion(),
+      oneDark,
+      paddingTheme,
+      EditorView.updateListener.of((update) => {
+        if (update.docChanged) {
+          code.current =  update.state.doc.toString();
+        }
+      }),
+    ],
+  });
 
-    viewRef.current.focus();
+  viewRef.current = new EditorView({
+  state,
+  parent: editorRef.current
+  });
 
-    return () => viewRef.current.destroy();
-  }, []);
+   return () => {
+    viewRef.current?.destroy();
+    viewRef.current = null;
+  };
+
+}, []);
+
+ useEffect(()=>{
+    if(!copyCode)return;
+    const obj = {id,code:code.current};
+    console.log(obj);
+    dispatch(saveCode(obj));
+  },[copyCode])
 
   return (
     <div className="h-full w-full flex flex-col overflow-hidden rounded-2xl shadow-lg">
@@ -48,7 +76,7 @@ export default function EditorBox({ code, setCode }) {
       <div className="flex-1 bg-[#1e1e1e] overflow-hidden">
         <div
           ref={editorRef}
-          className="h-full w-full px-3 py-3"
+          className="h-full w-full"
         />
       </div>
 

@@ -1,22 +1,34 @@
 @import "tailwindcss";
 
-.cm-editor {
+/* .cm-editor {
   height: 100%;
   background-color: #282c34;
 }
 
 .cm-content {
-  padding-left: 0;
+  padding: 0.75rem 0.75rem;   
+}
+
+.cm-line {
+  padding: 0 0.75rem;
 }
 
 .cm-gutters {
   padding-right: 6px;
 }
 
-.cm-line {
-    padding-left: 0;
-}
+
 
 .cm-scroller {
   padding-left: 0;
+} */
+
+.cm-content {
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+}
+
+.cm-line {
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
 }

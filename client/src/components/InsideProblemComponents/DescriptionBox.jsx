@@ -24,7 +24,7 @@ function DescriptionBox() {
 
                 <div className="flex items-start justify-between mb-4">
                     <h1
-                      class="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-rose-500 to-orange-400 bg-clip-text text-transparent"
+                      className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-rose-500 to-orange-400 bg-clip-text text-transparent"
                     >
                       {title}
                     </h1>
