@@ -6,7 +6,7 @@ import { autocompletion } from "@codemirror/autocomplete";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { useDispatch, useSelector } from "react-redux";
 import { deriveFunction } from "./helper";
-import { saveCode } from "../Slices/codeSlice";
+import { delCode, saveCode } from "../Slices/codeSlice";
 
 export default function EditorBox({id,copyCode}) {
   const editorRef = useRef(null);
@@ -14,9 +14,9 @@ export default function EditorBox({id,copyCode}) {
   const code = useRef(null);
   const func_name = useSelector(state=>state.insideProblem.function_name);
   const parameter = useSelector(state=>state.insideProblem.parameter_type);
+  const testcases = useSelector(state=>state.insideProblem.testcases);
   const derive = deriveFunction(func_name,parameter);
   const dispatch = useDispatch();
-
   useEffect(() => {
   code.current = derive;
   const paddingTheme = EditorView.theme({
@@ -57,11 +57,13 @@ export default function EditorBox({id,copyCode}) {
 }, []);
 
  useEffect(()=>{
-    if(!copyCode)return;
-    const obj = {id,code:code.current};
-    console.log(obj);
-    dispatch(saveCode(obj));
+    if(copyCode){
+      const obj = {id,code:code.current};
+      dispatch(saveCode(obj));
+    }
   },[copyCode])
+
+  if(!func_name)return null;
 
   return (
     <div className="h-full w-full flex flex-col overflow-hidden rounded-2xl shadow-lg">

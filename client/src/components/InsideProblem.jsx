@@ -1,52 +1,89 @@
 import React, { useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { apiCallFunction } from '../helpers/apiHelper';
 import EditorBox from './InsideProblemComponents/EditorBox';
 import DescriptionBox from './InsideProblemComponents/DescriptionBox';
 import { useDispatch, useSelector } from 'react-redux';
-import { setProblemData } from './Slices/insideProblemSlice';
+import { removeProblemData, setProblemData } from './Slices/insideProblemSlice';
 import Navbar from './Navbar';
 import { useState,useRef } from 'react';
+import { writeJS } from './InsideProblemComponents/helper';
+import { delCode } from './Slices/codeSlice';
+
+//used shouldrun usestate to actually know that react updated the state and iframeid was also changed,hence no
+//previous code run...comment is not llm
+
 
 function InsideProblem() {
     const [search, setSearch] = useSearchParams();
+    const navigate = useNavigate();
+    const iframeRef = useRef(null);
     const dispatch = useDispatch();
     const [copyCode,setCopyCode] = useState(false);
     const codeData = useSelector(state=>state.code);
+    const isDataLoaded = useSelector(state=>state.insideProblem.success);
     const id = search.get("id");
-    const iframeRef = useRef(null);
+    const [iframeId,setIframeId] = useState(0);
+    const [shouldRun,setShouldRun] = useState(false);
+
     const problemInfo = useSelector(state=>state.insideProblem);
-    console.log(problemInfo)
+    const timer = useRef(null);
     useEffect(() => {
         (async () => {
             const res = await apiCallFunction(`viewproblems/insideproblem/?id=${id}`, null, "GET");
-            res && dispatch(setProblemData(res.data));
+            dispatch(setProblemData(res.data));
         })();
+        
+        const handler = (res)=>{
+            if(!res?.data)return;
+            if (res.source !== iframeRef.current?.contentWindow) return;
+            setShouldRun(false);
+            console.log(res.data);
+            if(res.data.type==="result"){
+               // console.log("on result:",{...res?.data,iframeid:iframeId});
+                clearTimeout(timer.current);
+            }
+            if(res.data.type === "Error"){
+                clearTimeout(timer.current);
+            }
+        }
+        window.addEventListener("message",handler);
+        return ()=>window.removeEventListener("message",handler);
     }, []);
+
+    useEffect(()=>{
+        if(!shouldRun || !iframeRef.current)return;
+        setTimeout(()=>{
+            const code = codeData?.code;
+            iframeRef.current.srcdoc = writeJS(code,problemInfo);
+            setCopyCode(false);
+        },0);
+    },[shouldRun,iframeId,codeData]);
 
     function runCode(){
         setCopyCode(true);
-        if(!iframeRef.current)return;
-        const code = codeData?.code;
-        if(!code)return;
-        iframeRef.current.srcdoc=`
-            <html>
-                <body>
-                    <h1 id="haha"></h1>
-                    <script>
-                        ${code}
-                        const h1 = document.getElementById("haha");
-                        const x = ${problemInfo["function_name"]}(${problemInfo["testcases"].at(0)});
-                        h1.innerText = x;
-                    </script>
-                </body>
-            </html>
-        `;
+        setShouldRun(true);
+        setIframeId(prev=>prev+1);
+        clearTimeout(timer.current);
+        timer.current = setTimeout(()=>{
+            setShouldRun(false);
+            setIframeId(prev=>prev+1);
+            console.log("took too long to load ans!");
+        },3000);
     }
-
+    if(!isDataLoaded)return (<div>Loading....</div>);
     return (
-        <div className="h-[calc(100vh-56px)] flex flex-col">
+        <div className="h-screen flex flex-col">
             <Navbar />
+            <button
+                onClick={()=>{
+                    dispatch(delCode());
+                    dispatch(removeProblemData());
+                    navigate("/");
+                }}
+            >
+                GO BACK
+            </button>
             <div className="h-14 shrink-0 bg-white" />
             <div>
                 <button
@@ -54,7 +91,6 @@ function InsideProblem() {
                 >
                     Run Code
                 </button>
-                <iframe ref = {iframeRef} sandbox='allow-scripts' id='code-sandbox'></iframe>
             </div>
             <div className="flex flex-1 gap-12 px-6 overflow-hidden">
 
@@ -67,6 +103,13 @@ function InsideProblem() {
                 </div>
 
             </div>
+            <iframe 
+            ref={iframeRef} 
+            sandbox='allow-scripts' 
+            id='code-sandbox' 
+            //style={{display:"none"}}
+            key={iframeId}
+            ></iframe>
         </div>
     );
 

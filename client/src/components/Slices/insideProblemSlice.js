@@ -5,10 +5,10 @@ const insideProblemSlice = createSlice({
     initialState:{},
     reducers:{
         setProblemData:(state,action)=>{
-            return action.payload; 
+            return {...action.payload,success:true}; 
         },
         removeProblemData:(state,action)=>{
-            return {};
+            return {success:false};
         }
     }
 })

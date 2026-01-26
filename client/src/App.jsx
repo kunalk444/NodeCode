@@ -9,6 +9,8 @@ import { apiCallFunction } from './helpers/apiHelper';
 import { delUserData, saveUserData } from './components/Slices/userSlice';
 import {Routes,Route} from 'react-router-dom';
 import InsideProblem from './components/InsideProblem';
+import { delCode } from './components/Slices/codeSlice';
+import { removeProblemData } from './components/Slices/insideProblemSlice';
 
 function App() {
   const dispatch = useDispatch();
@@ -21,7 +23,8 @@ function App() {
       }else{
         dispatch(delUserData());
       }
-
+      dispatch(delCode());
+      dispatch(removeProblemData());
     })();
   },[]);
   

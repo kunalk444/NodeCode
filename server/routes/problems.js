@@ -18,7 +18,6 @@ problemRouter.get("/",async(req,res)=>{
 
 problemRouter.get("/insideproblem",async(req,res)=>{
     const id = req.query.id;
-    console.log(id);
     const ans = await getProblemData(id);
     if(ans)return res.status(200).json({success:true,data:ans});
     return res.status(404).json({success:false,msg:"Couldnt get Problem Data"});

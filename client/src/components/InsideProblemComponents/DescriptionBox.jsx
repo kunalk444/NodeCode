@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 
 function DescriptionBox() {
     const descData = useSelector(state => state.insideProblem);
+    if(Object.keys(descData).length==0)return null;
     const desc_arr = descData?.description.split(".");
     const testcases = descData?.testcases;
     const tag = descData?.difficulty;
@@ -19,7 +20,7 @@ function DescriptionBox() {
                 text-slate-900">
                   
             <div className="px-10 pt-10 pb-9
-                            bg-white/85 backdrop-blur-xl
+                           bg-white/85 backdrop-blur-xl
                             border-b border-slate-200">
 
                 <div className="flex items-start justify-between mb-4">
