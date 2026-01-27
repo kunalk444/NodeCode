@@ -14,8 +14,10 @@ export default function EditorBox({id,copyCode}) {
   const code = useRef(null);
   const func_name = useSelector(state=>state.insideProblem.function_name);
   const parameter = useSelector(state=>state.insideProblem.parameter_type);
+  const return_type = useSelector(state=>state.insideProblem.return_type);
+
   const testcases = useSelector(state=>state.insideProblem.testcases);
-  const derive = deriveFunction(func_name,parameter);
+  const derive = deriveFunction(func_name,parameter,return_type);
   const dispatch = useDispatch();
   useEffect(() => {
   code.current = derive;

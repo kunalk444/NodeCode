@@ -1,21 +1,32 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Signup from "./Authentication/Signup";
+import UserAvatar from "./UserAvatar";
 
 export default function Navbar(props) {
     const user = useSelector(state=>state.user);
     const isLoggedIn = user.isLoggedIn;
-
+    const [showSignup,setShowSignup] = useState(false);
+    const [msg,setMsg] = useState(null);
     function handleRegisterOrLogin() {
-        props.showSignup();
+        setShowSignup(true);
     }
-
+    useEffect(()=>{
+        if(msg)setTimeout(()=>setMsg(null),1700);
+    },[msg])
     return (
         <nav className="w-full h-14 px-6 flex items-center justify-between bg-white/70 backdrop-blur-md border-b border-slate-200 text-slate-800">
             <div className="text-[18px] font-semibold tracking-tight text-rose-500">
                 NodeCode
             </div>
-
+            {msg && (
+                <div className="px-6 mt-3">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-medium 
+            bg-gradient-to-r from-orange-50 to-rose-50 text-rose-600 border border-rose-200">
+                        {msg}
+                    </div>
+                </div>
+            )}
             {isLoggedIn ? (
                 <div className="flex items-center gap-4">
                     <input
@@ -27,9 +38,10 @@ export default function Navbar(props) {
                         View Progress
                     </button>
 
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-rose-400 to-orange-400 flex items-center justify-center text-white text-[13px] font-medium cursor-pointer">
-                        {user.isLoggedIn && user.name.charAt(0).toUpperCase()}
-                    </div>
+                    <UserAvatar user={user}
+                        ifDone={()=>setMsg("Logged out Successfully")}
+                        ifNot={()=>setMsg("Couldnt Logout, try again later")}
+                    />
                 </div>
             ) : (
                 <div className="flex items-center gap-3">
@@ -39,7 +51,7 @@ export default function Navbar(props) {
                     >
                         Register or Login
                     </button>
-
+                    {showSignup && <Signup stopShow = {()=>setShowSignup(false)}/>}
                 </div>
             )}
         </nav>

@@ -14,7 +14,7 @@ import { removeProblemData } from './components/Slices/insideProblemSlice';
 
 function App() {
   const dispatch = useDispatch();
-  const [showSignup,setShowSignup] = useState(false);
+  //const [showSignup,setShowSignup] = useState(false);
   useEffect(()=>{
     (async()=>{
       const res = await apiCallFunction("auth/me",null,"GET");
@@ -30,9 +30,8 @@ function App() {
   
   return (
     <>
-      <Navbar showSignup = {()=>setShowSignup(true)}/>
+      <Navbar />
       <Problems />
-      {showSignup && <Signup stopShow = {()=>setShowSignup(false)}/>}
     </>
   )
 }

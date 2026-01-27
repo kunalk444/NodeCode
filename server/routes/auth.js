@@ -78,4 +78,16 @@ authRouter.post("/googlelogin",async(req,res)=>{
     }
 })
 
+authRouter.get("/logout",async(req,res)=>{
+    res.clearCookie("jwt",{
+        sameSite:"lax",
+        httpOnly:true,
+        secure:true,
+    });
+    req.user = null;
+
+    return res.status(200).json({success:true});
+
+});
+
 export default authRouter;

@@ -3,11 +3,14 @@ import { apiCallFunction } from "../../helpers/apiHelper";
 import { GoogleLogin } from "@react-oauth/google";
 import { useDispatch } from "react-redux";
 import { saveUserData } from "../Slices/userSlice";
+import { useNavigate } from "react-router-dom";
+import { createPortal } from "react-dom";
 
-export default function Signup(props) {
+export default function Signup({ stopShow }) {
     const username = useRef(null);
     const emailId = useRef(null);
     const password = useRef(null);
+    const navigate = useNavigate("-1");
 
     const [mode, setMode] = useState("signup");
     const [show, setShow] = useState(false);
@@ -28,51 +31,55 @@ export default function Signup(props) {
                       email: emailId.current.value.trim(),
                       password: password.current.value.trim(),
                   };
+
         if (
-            payload.email.length == 0 ||
-            payload.password.length == 0 ||
-            (mode === "signup" && payload.name.length == 0)
+            payload.email.length === 0 ||
+            payload.password.length === 0 ||
+            (mode === "signup" && payload.name.length === 0)
         ) {
             setMsg("Fill all fields!");
             return;
         }
+
         if (!regex.test(payload.email)) {
             setMsg("Invalid Email!");
             return;
         }
+
         if (payload.password.length < 8) {
             setMsg("Password must contain atleast 8 characters!");
             return;
         }
+
         const res = await apiCallFunction(`auth/${mode}`, payload, "POST");
-        if(res.success){
+        if (res.success) {
             dispatch(saveUserData(res.user));
-            props.stopShow();
-        }else{
+            stopShow();
+        } else {
             setMsg(res.msg);
         }
     };
 
     const handleGoogleLogin = async (token) => {
         const res = await apiCallFunction(`auth/googlelogin`, { token }, "POST");
-        if(res.success){
+        if (res.success) {
             dispatch(saveUserData(res.user));
-            props.stopShow();
-        }else{
+            stopShow();
+        } else {
             setMsg(res.msg);
         }
     };
 
-    return (
+    return createPortal(
         <>
-            <div className="fixed inset-0 bg-gradient-to-br from-amber-100/60 via-rose-100/60 to-sky-100/60 backdrop-blur-sm" />
+            <div className="fixed inset-0 bg-black/20 backdrop-blur-lg z-40" />
 
-            <div className="fixed inset-0 flex items-center justify-center">
-                <div className="relative w-[420px] bg-white rounded-xl px-8 py-7 shadow-[0_20px_50px_rgba(0,0,0,0.15)] text-slate-800">
+            <div className="fixed inset-0 flex items-center justify-center z-50">
+                <div className="relative w-[420px] bg-white rounded-xl px-8 py-7 shadow-[0_25px_60px_rgba(0,0,0,0.25)] text-slate-800">
 
                     <button
-                        onClick={() => props.stopShow()}
-                        className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 text-sm"
+                        onClick={() => stopShow()}
+                        className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-sm"
                     >
                         <big>x</big>
                     </button>
@@ -128,9 +135,7 @@ export default function Signup(props) {
 
                     <div className="mt-5 flex justify-center">
                         <GoogleLogin
-                            onSuccess={(res) => {
-                                handleGoogleLogin(res.credential);
-                            }}
+                            onSuccess={(res) => handleGoogleLogin(res.credential)}
                             onError={(err) => console.error(err)}
                         />
                     </div>
@@ -148,6 +153,7 @@ export default function Signup(props) {
                     </div>
                 </div>
             </div>
-        </>
+        </>,
+        document.body
     );
 }
