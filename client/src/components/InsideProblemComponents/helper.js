@@ -16,7 +16,13 @@ export const deriveFunction=(name,parameter,return_type)=>{
 
 export const writeJS=(code,problemInfo)=>{
     //console.log(problemInfo.testcases.at(0));
-    console.log(typeof problemInfo.testcases.at(0));
+    console.log(JSON.stringify(problemInfo.expected_output) );
+    const values = `
+        const problemInfo = {
+            testcases: ${JSON.stringify(problemInfo.testcases)},
+            expected_output : ${JSON.stringify(problemInfo.expected_output)}
+        }
+    `;
 
     const yo= `
                 <html>
@@ -24,21 +30,41 @@ export const writeJS=(code,problemInfo)=>{
                         <script>
                             try{
                                 window.parent.postMessage({type:"ready"},"*");
+                                const result = (function(){
+                                    ${values}
                                         ${code}
-                                        const x = ${problemInfo.function_name}(${JSON.stringify(problemInfo.testcases.at(0))});
-                                        window.parent.postMessage({
-                                            type:"result",output:x
-                                        },"*");  
+                                        let msg = "";
+                                        let i = 0;
+                                        for(i=0;i<problemInfo.testcases.length;i++){
+                                            const x = ${problemInfo.function_name}(problemInfo.testcases.at(i));
+                                            if(!x)throw new Error("Invalid Code!");
+                                            if(typeof x !== typeof problemInfo.expected_output.at(i)){
+                                                msg = "Expected return type to be "+(typeof problemInfo.expected_output.at(i))+",got " +  (typeof x) + " instead!";
+                                                break;
+                                            }
+                                            if(JSON.stringify(x) !== JSON.stringify(problemInfo.expected_output.at(i))){
+                                                msg = "Failed testcase no:"+(i+1)+" Expected: " + JSON.stringify(problemInfo.expected_output.at(i)) + ",Your result: " + JSON.stringify(x);
+                                                break;
+                                            }
+                                        }
+                                        if(i===problemInfo.testcases.length)msg = "Passed all testcases";
+                                        return {msg,success:(msg==="Passed all testcases")};
+                                })();     
+                                if(!result)throw new Error("Invalid Code!");
+                                window.parent.postMessage({
+                                    ...result,type:"Result"
+                                },"*");  
+
                             }catch(err){
                                 window.parent.postMessage({
-                                    type:"Error",reason:err
+                                    type:"Error",msg:err
                                 },"*")
                             }       
                         </script>
                     </body>
                 </html>
             `;
-    
+    console.log(yo);
     return yo;
 }
 
@@ -98,7 +124,8 @@ export const sanitizeCode = (rawCode) => {
         "performance",
         "crypto",
         "console",
-        "log"
+        "log",
+        "while(true)"
     ];
 
     const lower = rawCode.toLowerCase();

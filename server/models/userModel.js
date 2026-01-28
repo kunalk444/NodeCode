@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 
 const userSchema = new mongoose.Schema({
     name:{
@@ -17,6 +17,14 @@ const userSchema = new mongoose.Schema({
     registration_type:{
         type:String,
         default:"normal"
+    },
+    progress:{
+        type:Object,
+    },
+    solved:
+    {
+        type:[mongoose.Types.ObjectId],
+        ref : "problems"
     }
 });
 

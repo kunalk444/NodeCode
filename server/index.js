@@ -8,6 +8,7 @@ import { verifyToken } from "./services/jwttoken.js";
 import problemRouter from "./routes/problems.js";
 import { authMiddleware } from "./services/middleware.js";
 import problemModel from "./models/problemModel.js";
+import userRouter from "./routes/user.js";
 
 const port = process.env.PORT;
 
@@ -35,6 +36,7 @@ app.use("/auth", authRouter);
 app.use("/viewproblems", problemRouter);
 
 app.use(authMiddleware);
+app.use("/user",userRouter);
 
 
 app.listen(port, () => {

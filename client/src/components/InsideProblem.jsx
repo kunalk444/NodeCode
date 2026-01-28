@@ -9,6 +9,7 @@ import Navbar from './Navbar';
 import { useState, useRef } from 'react';
 import { sanitizeCode, writeJS } from './InsideProblemComponents/helper';
 import { delCode } from './Slices/codeSlice';
+import ResultModal from './InsideProblemComponents/ResultModal';
 
 //used shouldrun usestate to actually know that react updated the state and iframeid was also changed,hence no
 //previous code run...comment is not llm
@@ -26,6 +27,8 @@ function InsideProblem() {
     const [shouldRun, setShouldRun] = useState(false);
     const [msg, setMsg] = useState(null);
     const user = useSelector(state => state.user);
+    const [showModal,setShowModal] = useState(null);
+    const [runButton,setRunButton] = useState("Run Code");
 
     const problemInfo = useSelector(state => state.insideProblem);
     const timer = useRef(null);
@@ -43,9 +46,8 @@ function InsideProblem() {
             //setShouldRun(false);
             console.log(res.data);
             clearTimeout(timer.current);
-            if (res.data.type === "result") {
-            }
-            if (res.data.type === "Error") {
+            if (res.data.type === "Result" || res.data.type === "Error"){
+                setShowModal(res.data);
             }
         }
 
@@ -66,7 +68,7 @@ function InsideProblem() {
     
 
     useEffect(()=>{
-        if(msg)setTimeout(()=>setMsg(null),1800);
+        if(msg)setTimeout(()=>setMsg(null),2000);
     },[msg]);
 
     useEffect(()=>{
@@ -87,12 +89,16 @@ function InsideProblem() {
             return;
         }
 
-        iframeRef.current.srcdoc = writeJS(code,problemInfo);
+        setRunButton("Running....");
+        setTimeout(()=>{
+            iframeRef.current.srcdoc = writeJS(code,problemInfo);
+            setRunButton("Run Code");
+        },1500);
 
         timer.current = setTimeout(()=>{
-            setMsg("took too long to execute!try again later..");
+            setMsg("Time Limit Exceeded!either code is invalid or try again later..");
             iframeRef.current.srcdoc = "";
-        },5000);
+        },4000);
     },[shouldRun,codeData?.code])
 
     
@@ -127,7 +133,7 @@ function InsideProblem() {
                     onClick={() => runCode()}
                     className="px-5 py-2 rounded-md text-sm font-medium text-white bg-gradient-to-r from-rose-500 to-orange-400 hover:opacity-90 transition"
                 >
-                    Run Code
+                    {runButton}
                 </button>
             </div>
 
@@ -147,6 +153,13 @@ function InsideProblem() {
                 id="code-sandbox"
                 style={{ display: "none" }}
             />
+            {showModal && <ResultModal 
+                        msg = {showModal.msg}
+                        type={showModal.type}
+                        success={showModal.success}
+                        stopShow={()=>setShowModal(null)}
+                        problemId={problemInfo._id}
+            />}
         </div>
     );
 }

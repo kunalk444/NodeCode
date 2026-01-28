@@ -43,3 +43,23 @@ export const handleLogin = async(user) =>{
     if(ifSame)return {success:true,user:{name:u1.name,email:u1.email,id:u1._id}};
     return {success:false,msg:"Wrong Password!"};
 }
+
+export const handleUserProgress = async(data)=>{
+    const problemId = data.problemId;
+    const msg  = data.msg;
+    const res = await userModel.findByIdAndUpdate(data.userId,{
+        $set:{
+            [`progress.${problemId}`]:{msg,timestamp:Date.now()}
+        }    
+    });
+    if(data.success){
+        await userModel.findByIdAndUpdate(data.userId,{
+            $addToSet:{
+                solved : problemId
+            }
+        })
+    }
+
+    if(res)return true;
+    return false;
+}

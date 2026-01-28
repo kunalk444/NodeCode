@@ -90,7 +90,7 @@ function DescriptionBox() {
                                 <span className="font-semibold text-slate-900">
                                     Expected Output:
                                 </span>{" "}
-                                {(expected_output.at(index) === '') ? '""' : expected_output.at(index)}
+                                {(expected_output.at(index) === '') ? '""' : JSON.stringify(expected_output.at(index))}
                             </div>
                         </div>
                     ))}
