@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Signup from "./Authentication/Signup";
 import UserAvatar from "./UserAvatar";
+import SearchBar from "./SearchBar";
 
 export default function Navbar(props) {
     const user = useSelector(state=>state.user);
@@ -16,7 +17,7 @@ export default function Navbar(props) {
     },[msg])
     return (
         <nav className="w-full h-14 px-6 flex items-center justify-between bg-white/70 backdrop-blur-md border-b border-slate-200 text-slate-800">
-            <div className="text-[18px] font-semibold tracking-tight text-rose-500">
+            <div className="mb-0 text-2xl font-extrabold tracking-tight bg-gradient-to-r from-rose-500 to-orange-400 bg-clip-text text-transparent">
                 NodeCode
             </div>
             {msg && (
@@ -29,11 +30,7 @@ export default function Navbar(props) {
             )}
             {isLoggedIn ? (
                 <div className="flex items-center gap-4">
-                    <input
-                        placeholder="Search problems"
-                        className="w-56 rounded-md border border-slate-200 px-3 py-[7px] text-[13px] placeholder-slate-400 focus:border-rose-400 focus:bg-rose-50/30 outline-none"
-                    />
-
+                    <SearchBar />
                     <button className="text-[13px] px-3 py-[7px] rounded-md border border-slate-200 hover:border-rose-400 hover:bg-rose-50/30 transition">
                         View Progress
                     </button>

@@ -4,6 +4,7 @@ import { getFromLocal, saveInLocal } from "./localhelper.js";
 import problemSlice from "./problemsSlice.js"
 import insideProblemSlice from "./insideProblemSlice.js";
 import codeslice from "./codeSlice.js";
+import filterSlice from "./filterSlice.js"
 const persistedState = getFromLocal() || undefined;
 
 const store = configureStore({
@@ -11,7 +12,8 @@ const store = configureStore({
         user : userSlice,
         problems : problemSlice,
         insideProblem:insideProblemSlice,
-        code:codeslice
+        code:codeslice,
+        filters:filterSlice,
     },
     preloadedState:persistedState
 });
@@ -22,6 +24,7 @@ store.subscribe(()=>{
         problems : store.getState().problems,
         insideProblem:store.getState().insideProblem,
         code:store.getState().code,
+        filters:store.getState().filters,
     });
 })
 

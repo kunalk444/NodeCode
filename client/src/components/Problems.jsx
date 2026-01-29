@@ -6,13 +6,21 @@ import { useSelector, useDispatch } from "react-redux";
 function Problems() {
     const dispatch = useDispatch();
     const problems = useSelector(state => state.problems);
+    const filters = useSelector(state => state.filters);
 
     useEffect(() => {
         (async () => {
-            const res = await apiCallFunction("viewproblems/", null, "GET");
+            const res = await apiCallFunction(`viewproblems?status=${filters.status}&tag=${filters.tag}`, null, "GET");
             dispatch(saveProblems(res.problems));
         })();
     }, []);
+
+    useEffect(() => {
+        (async () => {
+            const res = await apiCallFunction(`viewproblems?status=${filters.status}&tag=${filters.tag}`, null, "GET");
+            dispatch(saveProblems(res.problems));
+        })();
+    }, [filters]);
 
     const difficultyBadge = (difficulty) => {
         if (difficulty === "easy")
@@ -67,8 +75,9 @@ function Problems() {
                                 ">
                                     {p.title}
                                 </h3>
+                            
                                 <p className="text-[11px] text-slate-500">
-                                    Algorithms • Interview Ready
+                                    Algorithms • Custom-made
                                 </p>
                             </div>
                         </div>
