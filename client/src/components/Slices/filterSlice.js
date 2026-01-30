@@ -9,7 +9,7 @@ const filterSlice = createSlice({
     reducers:{
         changeFilters:(state,action)=>{
             if(action.payload.type==="tag")state.tag = action.payload.tag;
-            state.status = action.payload.status;            
+            if(action.payload.type==="status")state.status = action.payload.status;            
         }
     }
 });

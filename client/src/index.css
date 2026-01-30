@@ -32,3 +32,20 @@
   padding-left: 0.75rem !important;
   padding-right: 0.75rem !important;
 }
+
+.cm-editor {
+  height: 100%;
+  align-items: flex-start !important;
+}
+
+.cm-scroller {
+  align-items: flex-start !important;
+}
+
+
+.cm-editor,
+.cm-content,
+.cm-line {
+  direction: ltr !important;
+  text-align: left !important;
+}

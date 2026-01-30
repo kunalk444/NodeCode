@@ -30,6 +30,7 @@ export const writeJS=(code,problemInfo)=>{
                         <script>
                             try{
                                 window.parent.postMessage({type:"ready"},"*");
+
                                 const result = (function(){
                                     ${values}
                                         ${code}
@@ -37,7 +38,7 @@ export const writeJS=(code,problemInfo)=>{
                                         let i = 0;
                                         for(i=0;i<problemInfo.testcases.length;i++){
                                             const x = ${problemInfo.function_name}(problemInfo.testcases.at(i));
-                                            if(!x)throw new Error("Invalid Code!");
+                                            
                                             if(typeof x !== typeof problemInfo.expected_output.at(i)){
                                                 msg = "Expected return type to be "+(typeof problemInfo.expected_output.at(i))+",got " +  (typeof x) + " instead!";
                                                 break;
@@ -49,22 +50,28 @@ export const writeJS=(code,problemInfo)=>{
                                         }
                                         if(i===problemInfo.testcases.length)msg = "Passed all testcases";
                                         return {msg,success:(msg==="Passed all testcases")};
-                                })();     
-                                if(!result)throw new Error("Invalid Code!");
-                                window.parent.postMessage({
+                                })();   
+
+                                if(!result){
+                                    window.parent.postMessage({
+                                    type:"Error",msg:"Invalid Code!"
+                                    },"*");
+                                }
+                                else{
+                                    window.parent.postMessage({
                                     ...result,type:"Result"
-                                },"*");  
+                                    },"*");  
+                                }
 
                             }catch(err){
                                 window.parent.postMessage({
-                                    type:"Error",msg:err
+                                    type:"Error",msg:err.message
                                 },"*")
                             }       
                         </script>
                     </body>
                 </html>
             `;
-    console.log(yo);
     return yo;
 }
 
@@ -77,9 +84,9 @@ export const sanitizeCode = (rawCode) => {
         "window",
         "document",
         "globalThis",
-        "self",
+        
         "parent",
-        "top",
+        
         "eval",
         "constructor",
         "__proto__",

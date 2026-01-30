@@ -2,25 +2,41 @@ import React, { useEffect } from "react";
 import { apiCallFunction } from "../helpers/apiHelper";
 import { saveProblems } from "./Slices/problemsSlice";
 import { useSelector, useDispatch } from "react-redux";
+import { useState } from "react";
 
 function Problems() {
     const dispatch = useDispatch();
     const problems = useSelector(state => state.problems);
     const filters = useSelector(state => state.filters);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [total, setTotal] = useState([]);
+
+    // useEffect(() => {
+    //     (async () => {
+    //         const res = await apiCallFunction(
+    //             `viewproblems?status=${filters.status}&tag=${filters.tag}&currentpage=${currentPage}&limit=10`,
+    //              null, 
+    //              "GET");
+    //         dispatch(saveProblems(res.problems));
+    //         setTotal(res.total);
+    //         pages = Array.from({length:(res.total/10)},(_,i) => i+1);
+    //         console.log(pages);
+    //     })();
+    // }, [filters]);
 
     useEffect(() => {
         (async () => {
-            const res = await apiCallFunction(`viewproblems?status=${filters.status}&tag=${filters.tag}`, null, "GET");
+            const res = await apiCallFunction(
+                `viewproblems?status=${filters.status}&tag=${filters.tag}&currentpage=${currentPage}&limit=10`
+                , null,
+                "GET");
             dispatch(saveProblems(res.problems));
+            console.log(res.total);
+            const pages = Array.from({ length: (Math.ceil(res.total / 10)) }, (_, i) => i + 1);
+            setTotal(pages);
+            if(currentPage > (Math.ceil(res.total / 10)))setCurrentPage(1);
         })();
-    }, []);
-
-    useEffect(() => {
-        (async () => {
-            const res = await apiCallFunction(`viewproblems?status=${filters.status}&tag=${filters.tag}`, null, "GET");
-            dispatch(saveProblems(res.problems));
-        })();
-    }, [filters]);
+    }, [filters, currentPage]);
 
     const difficultyBadge = (difficulty) => {
         if (difficulty === "easy")
@@ -45,23 +61,32 @@ function Problems() {
             </div>
 
             <div className="grid gap-2">
-
-                {problems.map((p) => (
+                {
+                    problems && problems.length === 0
+                    ?
+                    <div>
+                        <p>Looks so empty!🫤</p>
+                    </div>
+                :
+                problems.map((p) => (
                     <a
                         key={p._id}
                         href={`/insideproblem?id=${p._id}`}
                         className="
-                            group
-                            flex items-center justify-between
-                            px-4 py-2
-                            rounded-lg
-                            border border-slate-200
-                            bg-white/80
-                            hover:border-rose-300
-                            hover:bg-rose-50/40
-                            transition-all
-                        "
+                        group
+                        flex items-center justify-between
+                        px-6 py-4
+                        rounded-xl
+                        border border-slate-200
+                        bg-white
+                        hover:border-rose-300
+                        hover:bg-rose-50/40
+                        transition-all
+                        shadow-sm
+                        hover:shadow-md
+                    "
                     >
+
                         <div className="flex items-center gap-3 min-w-0">
                             <span className="text-[11px] font-semibold text-slate-400">
                                 #{p.serial_no}
@@ -69,13 +94,13 @@ function Problems() {
 
                             <div className="min-w-0">
                                 <h3 className="
-                                    text-sm font-semibold text-slate-900
+                                    text-base font-semibold text-slate-900
                                     group-hover:text-rose-500
                                     transition truncate
-                                ">
+                                    ">
                                     {p.title}
                                 </h3>
-                            
+
                                 <p className="text-[11px] text-slate-500">
                                     Algorithms • Custom-made
                                 </p>
@@ -97,6 +122,44 @@ function Problems() {
                 ))}
 
             </div>
+            <div className="mt-10 flex justify-center gap-2 flex-wrap">
+                {
+                    total &&
+                    total.map((i) => (
+                        <button
+                            key={i}
+                            onClick={() => setCurrentPage(i)}
+                            disabled={i === currentPage}
+                            className={`
+                            min-w-[38px] h-10 px-3
+                            rounded-lg
+                            text-sm font-semibold
+                            border
+                            transition-all
+                            ${i === currentPage? `
+                                    bg-gradient-to-r from-rose-500 to-orange-400
+                                    text-white
+                                    border-orange-400
+                                    shadow-md
+                                    cursor-not-allowed
+                                `
+                                : `
+                                    bg-orange-50
+                                    text-orange-600
+                                    border-orange-200
+                                    hover:bg-orange-100
+                                    hover:border-orange-400
+                                    hover:text-orange-700
+                                `
+                                }`}
+                        >
+                            {i}
+                        </button>
+                    ))
+                }
+            </div>
+
+
         </div>
     );
 }

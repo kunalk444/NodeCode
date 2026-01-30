@@ -3,12 +3,15 @@ import { useSelector } from "react-redux";
 import Signup from "./Authentication/Signup";
 import UserAvatar from "./UserAvatar";
 import SearchBar from "./SearchBar";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar(props) {
     const user = useSelector(state=>state.user);
     const isLoggedIn = user.isLoggedIn;
     const [showSignup,setShowSignup] = useState(false);
     const [msg,setMsg] = useState(null);
+    const navigate = useNavigate();
+
     function handleRegisterOrLogin() {
         setShowSignup(true);
     }
@@ -31,7 +34,9 @@ export default function Navbar(props) {
             {isLoggedIn ? (
                 <div className="flex items-center gap-4">
                     <SearchBar />
-                    <button className="text-[13px] px-3 py-[7px] rounded-md border border-slate-200 hover:border-rose-400 hover:bg-rose-50/30 transition">
+                    <button className="text-[13px] px-3 py-[7px] rounded-md border border-slate-200 hover:border-rose-400 hover:bg-rose-50/30 transition"
+                        onClick={()=>navigate("/progresspage")}
+                    >
                         View Progress
                     </button>
 
@@ -41,8 +46,8 @@ export default function Navbar(props) {
                     />
                 </div>
             ) : (
-                <div className="flex items-center gap-3">
-
+                <div className="flex items-center gap-4">
+                    <SearchBar />
                     <button className="text-[13px] px-4 py-[7px] rounded-md bg-gradient-to-r from-rose-500 to-orange-400 text-white hover:opacity-90 transition"
                         onClick={handleRegisterOrLogin}
                     >

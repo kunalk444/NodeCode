@@ -32,10 +32,18 @@ function InsideProblem() {
 
     const problemInfo = useSelector(state => state.insideProblem);
     const timer = useRef(null);
+    const [solved,setSolved] = useState(false);
     useEffect(() => {
         (async () => {
             const res = await apiCallFunction(`viewproblems/insideproblem/?id=${id}`, null, "GET");
-            dispatch(setProblemData(res.data));
+            if(res.success){
+                dispatch(setProblemData(res.data));
+                console.log(res);
+                setSolved(res.solved);
+            }else{
+                setMsg("Some error in retrieving data!");
+            }
+
         })();
 
         const handler = (res) => {
@@ -139,7 +147,7 @@ function InsideProblem() {
 
             <div className="flex flex-1 gap-12 px-6 overflow-hidden">
                 <div className="w-1/2 h-full border-r border-slate-200">
-                    <DescriptionBox />
+                    <DescriptionBox solved={solved}/>
                 </div>
 
                 <div className="w-1/2 h-full">

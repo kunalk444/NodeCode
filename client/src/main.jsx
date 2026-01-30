@@ -7,6 +7,7 @@ import { Provider } from 'react-redux';
 import store from './components/Slices/store.js';
 import { BrowserRouter,Routes,Route } from 'react-router-dom';
 import InsideProblem from './components/InsideProblem.jsx';
+import ProgressPage from './components/ProgressPAge.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -16,6 +17,7 @@ createRoot(document.getElementById('root')).render(
         <Routes>
           <Route path='/' element={<App/>}/>
           <Route path='/insideproblem' element={<InsideProblem />} />
+          <Route path='/progresspage' element={<ProgressPage />} />
         </Routes>
       </Provider>
     </GoogleOAuthProvider>

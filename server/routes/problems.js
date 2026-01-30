@@ -4,6 +4,7 @@ import { getProblemData } from "../controllers/insideproblem.js";
 import userModel from "../models/userModel.js";
 import { authMiddleware } from "../services/middleware.js";
 import { verifyToken } from "../services/jwttoken.js";
+import mongoose from "mongoose";
 
 const problemRouter = Router();
 
@@ -11,7 +12,10 @@ problemRouter.get("/", async (req, res) => {
     try {
         const tag = req.query.tag;
         const status = req.query.status;
-
+        const currentpage = req.query.currentpage;
+        const limit = req.query.limit;
+       
+        const skip = (currentpage-1)*limit;
         const obj = {};
 
         if (tag && tag !== "all") obj.difficulty = tag;
@@ -39,8 +43,12 @@ problemRouter.get("/", async (req, res) => {
             title: 1,
             serial_no: 1,
             difficulty: 1,
-        });
-        if (problems) return res.json({ success: true, problems });
+        }).skip(skip).limit(limit);
+
+        
+        const total = await problemModel.countDocuments(obj);
+
+        if (problems) return res.json({ success: true, problems , total });
         problemModel.fin
         return res.json({ success: false, msg: "problem in fetching,try again later!" });
     } catch (err) {
@@ -50,10 +58,27 @@ problemRouter.get("/", async (req, res) => {
 });
 
 problemRouter.get("/insideproblem", async (req, res) => {
+
     const id = req.query.id;
     const ans = await getProblemData(id);
-    if (ans) return res.status(200).json({ success: true, data: ans });
+    const token = req.cookies.jwt;
+    if(token){
+        const yo = verifyToken(token);
+        if(yo.success){
+            const userid = yo.userObj.id;
+            const data = await userModel.findById(userid).select("solved").lean();
+            if(data){
+                const solved = data.solved;
+                const arr = solved.map((ele)=>String(ele));
+                if(ans && arr.includes(id))return res.status(200).json({ success: true, data: ans ,solved:true});
+            }
+        }
+    }
+
+    if (ans) return res.status(200).json({ success: true, data: ans , solved : false });
     return res.status(404).json({ success: false, msg: "Couldnt get Problem Data" });
+
+
 });
 
 problemRouter.get("/search",async(req,res)=>{
