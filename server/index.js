@@ -9,9 +9,14 @@ import userRouter from "./routes/user.js";
 import { connectDB } from "./mongoconnect.js";
 
 process.on("unhandledRejection", err => {
-  console.error(err);
-  process.exit(1);
+    console.error(err);
+    process.exit(1);
 });
+
+const allowedOrigins = [
+    "https://nodecode-delta.vercel.app",
+    "http://localhost:5173"
+];
 
 const port = process.env.PORT;
 
@@ -23,7 +28,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: true,
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
     credentials: true
 
 }));
@@ -32,12 +44,12 @@ app.use("/auth", authRouter);
 app.use("/viewproblems", problemRouter);
 
 app.use(authMiddleware);
-app.use("/user",userRouter);
+app.use("/user", userRouter);
 
 
-app.listen((process.env.PORT||port), () => {
+app.listen((process.env.PORT || port), () => {
     console.log(`server running on port ${port}`);
 });
 
 
-    
+

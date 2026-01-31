@@ -21,7 +21,7 @@ function UserAvatar({user,ifDone,ifNot}) {
 
     async function handleLogout(){
         setMsg("Logging out....");
-        const res = await apiCallFunction("auth/logout",null,"GET");
+        const res = await apiCallFunction("auth/logout",null,"POST");
         if(res.success){
             dispatch(delUserData());
             setMsg("Log out");
