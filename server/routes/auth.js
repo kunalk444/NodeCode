@@ -79,9 +79,6 @@ authRouter.post("/googlelogin", async (req, res) => {
 
 authRouter.post("/logout", async (req, res) => {
     try {
-        res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
-        res.setHeader("Pragma", "no-cache");
-        res.setHeader("Expires", "0");
         res.clearCookie("jwt", {
             sameSite: "lax",
             httpOnly: true,

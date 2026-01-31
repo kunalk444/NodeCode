@@ -13,10 +13,6 @@ process.on("unhandledRejection", err => {
     process.exit(1);
 });
 
-const allowedOrigins = [
-    "https://nodecode-delta.vercel.app",
-    "http://localhost:5173"
-];
 
 const port = process.env.PORT;
 
@@ -27,18 +23,29 @@ await connectDB();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin) return callback(null, true);
-        if (allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error("Not allowed by CORS"));
-        }
-    },
-    credentials: true
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://nodecode-delta.vercel.app",
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    if (origin.endsWith(".vercel.app")) {
+      return callback(null, true);
+    }
+
+    return callback(null, false);
+  },
+  credentials: true,
 }));
+
 
 app.use("/auth", authRouter);
 app.use("/viewproblems", problemRouter);
