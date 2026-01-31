@@ -20,7 +20,7 @@ authRouter.post("/signup",async(req,res)=>{
             const token  = createJwtToken(ifCreated.user);  
 
             res.cookie("jwt",token,{
-                sameSite:"lax",
+                sameSite:"none",
                 httpOnly:true,
                 secure:true,
                 maxAge: 60*60*24*1000
@@ -30,7 +30,7 @@ authRouter.post("/signup",async(req,res)=>{
         }
         return res.json({success:false,msg:ifCreated.msg});
     }catch(err){
-        console.error(err);
+        return res.status(500).json({success:false,msg:"Internal server error"});
     }
 });
 
@@ -38,11 +38,10 @@ authRouter.post("/login",async(req,res)=>{
     try{
         const user = req.body;
         const ifExist = await handleLogin(user);
-        console.log(ifExist);
         if(ifExist.success){
             const token  = createJwtToken(ifExist.user);
             res.cookie("jwt",token,{
-                sameSite:"lax",
+                sameSite:"none",
                 httpOnly:true,
                 secure:true,
                 maxAge: 60*60*24*1000
@@ -50,7 +49,7 @@ authRouter.post("/login",async(req,res)=>{
         }
         return res.json(ifExist);
     }catch(err){
-        console.error(err);
+        return res.status(500).json({success:false,msg:"Internal server error"});
     }
 })
 
@@ -66,28 +65,31 @@ authRouter.post("/googlelogin",async(req,res)=>{
         if(ans.success){
             const token = createJwtToken(ans.user);
             res.cookie("jwt",token,{
-                sameSite:"lax",
+                sameSite:"none",
                 httpOnly:true,
                 secure:true,
                 maxAge: 60*60*24*1000
             })
         }
         return res.json(ans);
-    }catch(err){
-        console.error(err);
+    }catch(err){    
+        return res.status(500).json({success:false,msg:"Internal server error"});
     }
 })
 
 authRouter.get("/logout",async(req,res)=>{
-    res.clearCookie("jwt",{
-        sameSite:"lax",
-        httpOnly:true,
-        secure:true,
-    });
-    req.user = null;
+    try{
+        res.clearCookie("jwt",{
+            sameSite:"lax",
+            httpOnly:true,
+            secure:true,
+        });
+        req.user = null;
 
-    return res.status(200).json({success:true});
-
+        return res.status(200).json({success:true});
+    }catch(err){
+        return res.status(500).json({success:false,msg:"Internal server error"});
+    }
 });
 
 export default authRouter;

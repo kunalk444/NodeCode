@@ -58,39 +58,44 @@ problemRouter.get("/", async (req, res) => {
 });
 
 problemRouter.get("/insideproblem", async (req, res) => {
-
-    const id = req.query.id;
-    const ans = await getProblemData(id);
-    const token = req.cookies.jwt;
-    if(token){
-        const yo = verifyToken(token);
-        if(yo.success){
-            const userid = yo.userObj.id;
-            const data = await userModel.findById(userid).select("solved").lean();
-            if(data){
-                const solved = data.solved;
-                const arr = solved.map((ele)=>String(ele));
-                if(ans && arr.includes(id))return res.status(200).json({ success: true, data: ans ,solved:true});
+    try {
+        const id = req.query.id;
+        const ans = await getProblemData(id);
+        const token = req.cookies.jwt;
+        if(token){
+            const yo = verifyToken(token);
+            if(yo.success){
+                const userid = yo.userObj.id;
+                const data = await userModel.findById(userid).select("solved").lean();
+                if(data){
+                    const solved = data.solved;
+                    const arr = solved.map((ele)=>String(ele));
+                    if(ans && arr.includes(id))return res.status(200).json({ success: true, data: ans ,solved:true});
+                }
             }
         }
+
+        if (ans) return res.status(200).json({ success: true, data: ans , solved : false });
+        return res.status(404).json({ success: false, msg: "Couldnt get Problem Data" });
+    } catch (err) {
+        return res.json({ success: false, msg: err });
     }
-
-    if (ans) return res.status(200).json({ success: true, data: ans , solved : false });
-    return res.status(404).json({ success: false, msg: "Couldnt get Problem Data" });
-
-
 });
 
 problemRouter.get("/search",async(req,res)=>{
-    const str = req.query.s;
-    const ans = await problemModel.find({
-        title:{$regex:str,$options:"i"},
-    },{
-        _id:1,
-        title:1,
-    });
-    if(!ans)return res.json({success:false});
-    return res.json({success:true,data:ans});
+    try {
+        const str = req.query.s;
+        const ans = await problemModel.find({
+            title:{$regex:str,$options:"i"},
+        },{
+            _id:1,
+            title:1,
+        });
+        if(!ans)return res.json({success:false});
+        return res.json({success:true,data:ans});
+    } catch (err) {
+        return res.json({ success: false, msg: err });
+    }
 });
 
 export default problemRouter;
