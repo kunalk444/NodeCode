@@ -10,7 +10,6 @@ import InsideProblem from './components/InsideProblem.jsx';
 import ProgressPage from './components/ProgressPAge.jsx';
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
     <BrowserRouter>
     <GoogleOAuthProvider clientId={'1077019201006-o087ojud2fm2qsu6lc4oc3mn8shetohv.apps.googleusercontent.com'}>
       <Provider store={store}>
@@ -22,6 +21,5 @@ createRoot(document.getElementById('root')).render(
       </Provider>
     </GoogleOAuthProvider>
     </BrowserRouter>
-  </StrictMode>,
 )
 

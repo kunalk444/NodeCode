@@ -5,18 +5,23 @@ import { apiCallFunction } from '../helpers/apiHelper';
 import { useState } from 'react';
 import Navbar from './Navbar';
 import { useNavigate } from 'react-router-dom';
+import Report from './Report';
 
 function ProgressPage() {
     const user = useSelector(state => state.user);
     const navigate = useNavigate();
     if (!user.isLoggedIn) return (<div>Login to view progress...</div>);
-    const [progress, setProgress] = useState(null);
-    console.log(progress);
+    const [progress, setProgress] = useState({});
+    const[report,setReport] = useState({});
+
     useEffect(() => {
         (
             async () => {
                 const res = await apiCallFunction("user/showprogress", null, "GET");
-                if (res.success) setProgress(res.progress);
+                if (res.success){
+                    setProgress(res.progress);
+                    setReport(res.report);
+                }
             }
         )();
     }, []);
@@ -27,7 +32,7 @@ function ProgressPage() {
         )
         : [];
 
-    
+    if(!progress)return(<div>Loading...</div>)
     return (
 
         <div className="min-h-screen bg-gradient-to-b from-rose-50/40 via-white to-white">
@@ -149,7 +154,9 @@ function ProgressPage() {
                         )}
                     </div>
 
-                    <div className="w-[40%] min-h-[300px] rounded-xl border border-dashed border-orange-200 bg-orange-50/30" />
+                    <div className="w-[40%] min-h-[300px] rounded-xl border border-dashed border-orange-200 bg-orange-50/30">
+                        <Report report={report}/>
+                    </div>
 
                 </div>
             </div>

@@ -12,6 +12,7 @@ import InsideProblem from './components/InsideProblem';
 import { delCode } from './components/Slices/codeSlice';
 import { removeProblemData } from './components/Slices/insideProblemSlice';
 import FilterBox from './components/FilterBox';
+import Quotes from './components/Quotes';
 
 function App() {
   const dispatch = useDispatch();
@@ -34,6 +35,7 @@ function App() {
       <Navbar />
 
       <div className="flex gap-4 px-1 mt-2 max-w-[1600px] mx-auto bg-gradient-to-b from-rose-50/40 via-white to-white">
+
         <div className="w-56 shrink-0 mt-33">
           <FilterBox />
         </div>
@@ -42,8 +44,12 @@ function App() {
           <Problems />
         </div>
 
-        <div className="w-48 shrink-0"></div>
+        <div className="w-72 shrink-0 mt-33">
+          <Quotes />
+        </div>
+
       </div>
+
     </>
   );
 

@@ -7,6 +7,10 @@ import { oneDark } from "@codemirror/theme-one-dark";
 import { useDispatch, useSelector } from "react-redux";
 import { deriveFunction } from "./helper";
 import { delCode, saveCode } from "../Slices/codeSlice";
+import { indentUnit,indentOnInput } from "@codemirror/language";
+import { keymap } from "@codemirror/view";
+import { indentWithTab } from "@codemirror/commands";
+
 
 export default function EditorBox({id,copyCode}) {
   const editorRef = useRef(null);
@@ -36,6 +40,9 @@ export default function EditorBox({id,copyCode}) {
       lineNumbers(),
       javascript(),
       autocompletion(),
+      indentUnit.of("    "),
+      indentOnInput(),
+      keymap.of([indentWithTab]),
       oneDark,
       paddingTheme,
       EditorView.updateListener.of((update) => {

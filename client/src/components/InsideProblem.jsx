@@ -28,13 +28,17 @@ function InsideProblem() {
     const [msg, setMsg] = useState(null);
     const user = useSelector(state => state.user);
     const [showModal,setShowModal] = useState(null);
+    const [seemodal,setseemodal] = useState(false);
     const [runButton,setRunButton] = useState("Run Code");
+    const[iframekey,setIframeKey] = useState(0);
 
     const problemInfo = useSelector(state => state.insideProblem);
     const timer = useRef(null);
     const [solved,setSolved] = useState(false);
     useEffect(() => {
-        (async () => {
+        if(!isDataLoaded){
+
+            (async () => {
             const res = await apiCallFunction(`viewproblems/insideproblem/?id=${id}`, null, "GET");
             if(res.success){
                 dispatch(setProblemData(res.data));
@@ -43,19 +47,20 @@ function InsideProblem() {
             }else{
                 setMsg("Some error in retrieving data!");
             }
+            })();
 
-        })();
-
+        }
         const handler = (res) => {
             iframeRef.current.srcdoc = "";
+            setIframeKey(prev=>prev+1);
+            setShouldRun(false);
             if (!res?.data) return;
-            if (res.source !== iframeRef.current?.contentWindow) return;
-            //if(res.data.iframeId !== iframeId)return;
-            //setShouldRun(false);
-            console.log(res.data);
             clearTimeout(timer.current);
+            if (res.source !== iframeRef.current?.contentWindow) return;
+            console.log(res.data);
             if (res.data.type === "Result" || res.data.type === "Error"){
                 setShowModal(res.data);
+                setseemodal(true);
             }
         }
 
@@ -71,21 +76,22 @@ function InsideProblem() {
         }
         setCopyCode(true);
         setShouldRun(true);
+        setIframeKey(prev=>prev+1);
+        iframeRef.current.srcdoc = "";
+        clearTimeout(timer.current);        
     }
 
     
 
     useEffect(()=>{
-        if(msg)setTimeout(()=>setMsg(null),2000);
+        if(msg)setTimeout(()=>setMsg(null),2700);
     },[msg]);
 
     useEffect(()=>{
         setCopyCode(false);
-        if(!shouldRun)return;
-        if(!codeData?.code)return;
+        if(!shouldRun || !codeData?.code)return;
         setShouldRun(false);
         dispatch(delCode());
-        //iframeRef.current.srcdoc = "";
         const code = codeData?.code;
         if(!code){
             iframeRef.current.srcdoc = "";
@@ -98,15 +104,20 @@ function InsideProblem() {
         }
 
         setRunButton("Running....");
+        
         setTimeout(()=>{
-            iframeRef.current.srcdoc = writeJS(code,problemInfo);
+            const x = writeJS(code,problemInfo);
+            iframeRef.current.srcdoc = x;
             setRunButton("Run Code");
+            timer.current = setTimeout(()=>{
+                iframeRef.current.srcdoc = "";
+                setShouldRun(false);
+                setIframeKey(prev=>prev+1);
+                setMsg("Time Limit Exceeded!either code is invalid or try again later.. \n try reloading the page too!");
+            },4000);
         },1500);
 
-        timer.current = setTimeout(()=>{
-            setMsg("Time Limit Exceeded!either code is invalid or try again later..");
-            iframeRef.current.srcdoc = "";
-        },4000);
+
     },[shouldRun,codeData?.code])
 
     
@@ -147,7 +158,7 @@ function InsideProblem() {
 
             <div className="flex flex-1 gap-12 px-6 overflow-hidden">
                 <div className="w-1/2 h-full border-r border-slate-200">
-                    <DescriptionBox solved={solved}/>
+                    <DescriptionBox solved={solved} success={(showModal && showModal.success)||false}/>
                 </div>
 
                 <div className="w-1/2 h-full">
@@ -157,15 +168,16 @@ function InsideProblem() {
 
             <iframe
                 ref={iframeRef}
+                key={iframekey}
                 sandbox="allow-scripts"
                 id="code-sandbox"
                 style={{ display: "none" }}
             />
-            {showModal && <ResultModal 
+            {seemodal && <ResultModal 
                         msg = {showModal.msg}
                         type={showModal.type}
                         success={showModal.success}
-                        stopShow={()=>setShowModal(null)}
+                        stopShow={()=>setseemodal(false)}
                         problemId={problemInfo._id}
             />}
         </div>

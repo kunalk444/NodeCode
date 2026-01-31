@@ -1,7 +1,7 @@
 import React from 'react'
 import { useSelector } from 'react-redux';
 
-function DescriptionBox({ solved }) {
+function DescriptionBox({ solved,success }) {
     const descData = useSelector(state => state.insideProblem);
     if (Object.keys(descData).length == 0) return null;
     const desc_arr = descData?.description?.split(".");
@@ -10,7 +10,7 @@ function DescriptionBox({ solved }) {
     const return_type = descData?.return_type;
     const expected_output = descData?.expected_output;
     const title = descData?.title;
-
+    console.log(success);
 
     return (
         <div
@@ -44,7 +44,7 @@ function DescriptionBox({ solved }) {
                             {tag}
                         </div>
 
-                        {solved && (
+                        {(solved||success) && (
                             <div
                                 className="px-3 py-[4px] rounded-full
                 text-[11px] font-semibold tracking-wide

@@ -16,7 +16,7 @@ export const deriveFunction=(name,parameter,return_type)=>{
 
 export const writeJS=(code,problemInfo)=>{
     //console.log(problemInfo.testcases.at(0));
-    console.log(JSON.stringify(problemInfo.expected_output) );
+   // console.log(JSON.stringify(problemInfo.expected_output) );
     const values = `
         const problemInfo = {
             testcases: ${JSON.stringify(problemInfo.testcases)},

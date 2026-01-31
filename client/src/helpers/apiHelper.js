@@ -1,5 +1,7 @@
+const API = import.meta.env.VITE_API_URL;
+
 export const apiCallFunction = async(path,payload,methodType)=>{
-    const yo = await fetch(`http://localhost:5000/${path}`,{
+    const yo = await fetch(`${API}/${path}`,{
         method:methodType,
         headers:(payload)?{'Content-type':'application/json'}:undefined,
         body: (payload!=null)?JSON.stringify(payload):null,
