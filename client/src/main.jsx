@@ -7,7 +7,7 @@ import { Provider } from 'react-redux';
 import store from './components/Slices/store.js';
 import { BrowserRouter,Routes,Route } from 'react-router-dom';
 import InsideProblem from './components/InsideProblem.jsx';
-import ProgressPage from './components/ProgressPAge.jsx';
+import ProgressPage from './components/ProgressPage.jsx';
 
 createRoot(document.getElementById('root')).render(
     <BrowserRouter>
