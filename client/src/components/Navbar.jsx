@@ -9,14 +9,14 @@ export default function Navbar(props) {
     const user = useSelector(state=>state.user);
     const isLoggedIn = user.isLoggedIn;
     const [showSignup,setShowSignup] = useState(false);
-    const [msg,setMsg] = useState(null);
+    const [msg,setMsg] = useState("Server Takes Approx 40-50 secs to load!⌛");
     const navigate = useNavigate();
 
     function handleRegisterOrLogin() {
         setShowSignup(true);
     }
     useEffect(()=>{
-        if(msg)setTimeout(()=>setMsg(null),1700);
+        if(msg)setTimeout(()=>setMsg(null),2300);
     },[msg])
     return (
         <nav className="w-full h-14 px-6 flex items-center justify-between bg-white/70 backdrop-blur-md border-b border-slate-200 text-slate-800">
