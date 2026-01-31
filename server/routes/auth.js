@@ -80,7 +80,7 @@ authRouter.post("/googlelogin", async (req, res) => {
 authRouter.post("/logout", async (req, res) => {
     try {
         res.clearCookie("jwt", {
-            sameSite: "lax",
+            sameSite: "none",
             httpOnly: true,
             secure: true,
         });
