@@ -113,7 +113,7 @@ function InsideProblem() {
                 iframeRef.current.srcdoc = "";
                 setShouldRun(false);
                 setIframeKey(prev => prev + 1);
-                setMsg("Time Limit Exceeded!either code is invalid or try again later.. \n try reloading the page too!");
+                setMsg("Time Limit Exceeded!either code is invalid or try again later.. \n try reloading the page");
             }, 4000);
         }, 1500);
 

@@ -65,6 +65,7 @@ function Problems() {
                     problems && problems.length === 0
                     ?
                     <div>
+                        <p>Takes Approx 40-50 secs to load!⌛</p>
                         <p>Looks so empty!🫤</p>
                     </div>
                 :
