@@ -50,7 +50,7 @@ export default function Signup({ stopShow }) {
             setMsg("Password must contain atleast 8 characters!");
             return;
         }
-
+        setMsg("Getting you in...⌛");
         const res = await apiCallFunction(`auth/${mode}`, payload, "POST");
         if (res.success) {
             dispatch(saveUserData(res.user));

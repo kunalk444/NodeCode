@@ -34,7 +34,7 @@ function Problems() {
             console.log(res.total);
             const pages = Array.from({ length: (Math.ceil(res.total / 10)) }, (_, i) => i + 1);
             setTotal(pages);
-            if(currentPage > (Math.ceil(res.total / 10)))setCurrentPage(1);
+            if (currentPage > (Math.ceil(res.total / 10))) setCurrentPage(1);
         })();
     }, [filters, currentPage]);
 
@@ -63,17 +63,44 @@ function Problems() {
             <div className="grid gap-2">
                 {
                     problems && problems.length === 0
-                    ?
-                    <div>
-                        <p>Takes Approx 40-50 secs to load!⌛</p>
-                        <p>Looks so empty!🫤</p>
-                    </div>
-                :
-                problems.map((p) => (
-                    <a
-                        key={p._id}
-                        href={`/insideproblem?id=${p._id}`}
-                        className="
+                        ?
+                        <>
+                        <p className="text-center text-sm text-slate-500 mb-4">
+                            Server may take 40-50 seconds to load all problems.⌛
+                        </p>
+                        <div className="space-y-3 animate-pulse">
+
+                            {[...Array(6)].map((_, i) => (
+                                <div
+                                    key={i}
+                                    className="
+                                        flex items-center justify-between
+                                        px-6 py-4
+                                        rounded-xl
+                                        border border-slate-200
+                                        bg-white
+                                        "
+                                >
+                                    <div className="flex items-center gap-3 w-full">
+                                        <div className="h-3 w-6 bg-slate-200 rounded" />
+                                        <div className="flex-1 space-y-2">
+                                            <div className="h-4 w-3/4 bg-slate-200 rounded" />
+                                            <div className="h-3 w-1/3 bg-slate-100 rounded" />
+                                        </div>
+                                    </div>
+
+                                    <div className="h-6 w-14 bg-slate-200 rounded-full" />
+                                </div>
+                            ))}
+                            
+                        </div>
+                        </>
+                        :
+                        problems.map((p) => (
+                            <a
+                                key={p._id}
+                                href={`/insideproblem?id=${p._id}`}
+                                className="
                         group
                         flex items-center justify-between
                         px-6 py-4
@@ -86,41 +113,41 @@ function Problems() {
                         shadow-sm
                         hover:shadow-md
                     "
-                    >
+                            >
 
-                        <div className="flex items-center gap-3 min-w-0">
-                            <span className="text-[11px] font-semibold text-slate-400">
-                                #{p.serial_no}
-                            </span>
+                                <div className="flex items-center gap-3 min-w-0">
+                                    <span className="text-[11px] font-semibold text-slate-400">
+                                        #{p.serial_no}
+                                    </span>
 
-                            <div className="min-w-0">
-                                <h3 className="
+                                    <div className="min-w-0">
+                                        <h3 className="
                                     text-base font-semibold text-slate-900
                                     group-hover:text-rose-500
                                     transition truncate
                                     ">
-                                    {p.title}
-                                </h3>
+                                            {p.title}
+                                        </h3>
 
-                                <p className="text-[11px] text-slate-500">
-                                    Algorithms • Custom-made
-                                </p>
-                            </div>
-                        </div>
+                                        <p className="text-[11px] text-slate-500">
+                                            Algorithms • Custom-made
+                                        </p>
+                                    </div>
+                                </div>
 
-                        <span
-                            className={`
+                                <span
+                                    className={`
                                 text-[11px] font-semibold
                                 px-2.5 py-1
                                 rounded-full
                                 ring-1
                                 ${difficultyBadge(p.difficulty)}
                             `}
-                        >
-                            {p.difficulty}
-                        </span>
-                    </a>
-                ))}
+                                >
+                                    {p.difficulty}
+                                </span>
+                            </a>
+                        ))}
 
             </div>
             <div className="mt-10 flex justify-center gap-2 flex-wrap">
@@ -137,14 +164,14 @@ function Problems() {
                             text-sm font-semibold
                             border
                             transition-all
-                            ${i === currentPage? `
+                            ${i === currentPage ? `
                                     bg-gradient-to-r from-rose-500 to-orange-400
                                     text-white
                                     border-orange-400
                                     shadow-md
                                     cursor-not-allowed
                                 `
-                                : `
+                                    : `
                                     bg-orange-50
                                     text-orange-600
                                     border-orange-200

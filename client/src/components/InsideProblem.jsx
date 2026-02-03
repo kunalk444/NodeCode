@@ -121,7 +121,41 @@ function InsideProblem() {
     }, [shouldRun, codeData?.code])
 
 
-    if (!isDataLoaded) return (<div>Loading....</div>);
+    if (!isDataLoaded) {
+    return (
+        <div className="h-screen flex flex-col animate-pulse">
+            <div className="px-6 py-2 text-xs bg-amber-50 border-b border-amber-200">
+                <div className="h-3 w-2/3 bg-amber-200 rounded" />
+            </div>
+
+            <div className="h-14 shrink-0 flex items-center justify-between px-6 bg-white border-b border-slate-200">
+                <div className="h-4 w-16 bg-slate-200 rounded" />
+                <div className="h-9 w-28 bg-slate-200 rounded-md" />
+            </div>
+
+            <div className="flex flex-1 gap-12 px-6 overflow-hidden">
+                <div className="w-1/2 h-full border-r border-slate-200 pr-6 space-y-4">
+                    <div className="h-6 w-3/4 bg-slate-200 rounded" />
+                    <div className="h-4 w-full bg-slate-100 rounded" />
+                    <div className="h-4 w-5/6 bg-slate-100 rounded" />
+                    <div className="h-4 w-2/3 bg-slate-100 rounded" />
+
+                    <div className="mt-6 space-y-2">
+                        {[...Array(7)].map((_, i) => (
+                            <div key={i} className="h-3 w-full bg-slate-100 rounded" />
+                        ))}
+                    </div>
+                </div>
+
+                <div className="w-1/2 h-full pl-6 space-y-3">
+                    <div className="h-6 w-1/3 bg-slate-200 rounded" />
+                    <div className="flex-1 bg-slate-100 rounded-xl border border-slate-200" />
+                </div>
+            </div>
+        </div>
+    );
+}
+
     return (
         <div className="h-screen flex flex-col">
             <Navbar />
